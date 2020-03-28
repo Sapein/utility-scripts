@@ -87,7 +87,7 @@ Library_BookAdd(){
         Book_Path=$(printf "${Files}" | dmenu -i -p "Choose Book File: ")
         [ -z "${Book_Path}" ] && exit
         Book_Path=$(printf "${_Files}" | grep "${Book_Path}")
-        Book_Path="${Section_Path}/${Book_Path}"
+        Book_Path="${Section_Path}/$(printf "${Book_Path}" | sed -s 's?'"${Section_Path}"'??')"
         Book_Program=$(printf "" | dmenu -i -p "Enter Reading Program: ")
         [ -z "${Book_Program}" ] && exit
         printf "${Book_Title}\t${Book_Program}\t${Book_Path}\n" >> "${Section_Path}/books"
