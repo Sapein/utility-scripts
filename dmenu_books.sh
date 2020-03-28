@@ -13,20 +13,20 @@ dmenu_browseargs_shelf="${dmenu_browseargs}"
 Library_Browse(){
     Section_Name=$(sed -e 's?\t.*??' "${Library_Location}/catalog" | dmenu ${dmenu_browseargs_section} "What Section: ") 
     [ -z "${Section_Name}" ] && exit
-    Section_Path=$(grep "${Section_Name}" "${Library_Location}/catalog" | sed -e 's?.*\t??')
+    Section_Path=$(grep -m1 "${Section_Name}" "${Library_Location}/catalog" | sed -e 's?.*\t??')
     if [ -f "${Section_Path}/shelves" ]
     then
         Shelf=$(sed -e 's?\t.*??' "${Section_Path}/shelves" | dmenu ${dmenu_browseargs_shelf} "What Shelf (Enter None for None): ")
         if [ "${Shelf}" != "None" ]
         then
             [ -z "${Shelf}" ] && exit
-            Section_Path=$(grep "${Shelf}" "${Section_Path}/shelves" | sed -e 's?^.*\t??')
+            Section_Path=$(grep -m1 "${Shelf}" "${Section_Path}/shelves" | sed -e 's?^.*\t??')
         fi
     fi
     Book=$(sed -e 's?\t.*??' "${Section_Path}/books" | dmenu ${dmenu_browseargs_book} "What Book: ")
     [ -z "${Book}" ] && exit
-    Book_File=$(grep "${Book}" "${Section_Path}/books" | sed -e 's?.*\t.*\t??')
-    Book_Program=$(grep "${Book}" "${Section_Path}/books" | sed -e 's?.*\t\(.*\)\t.*?\1?')
+    Book_File=$(grep -m1 "${Book}" "${Section_Path}/books" | sed -e 's?.*\t.*\t??')
+    Book_Program=$(grep -m1 "${Book}" "${Section_Path}/books" | sed -e 's?.*\t\(.*\)\t.*?\1?')
     "${Book_Program}" "${Book_File}"
 }
 
@@ -48,7 +48,7 @@ Library_SectionCreate(){
 Library_ShelfCreate(){
     Section_Name=$(sed -e 's?\t.*??' "${Library_Location}/catalog"| dmenu -i -p "What Section: ") 
     [ -z "${Section_Name}" ] && exit
-    Section_Path=$(grep "${Section_Name}" "${Library_Location}/catalog"  | sed -e 's?.*\t??' | tr -d '\n')
+    Section_Path=$(grep -m1 "${Section_Name}" "${Library_Location}/catalog" | sed -e 's?.*\t??' | tr -d '\n')
     Shelf_Name=$(printf "" | dmenu -i -p "Shelf Name: ")
     [ -z "${Shelf_Name}" ] && exit
     if [ "$(printf 'Yes\nNo' | dmenu -i -p "Link to a Directory? " | tr -d '\n')" = "Yes" ]
@@ -66,14 +66,14 @@ Library_ShelfCreate(){
 Library_BookAdd(){
     Section_Name=$(sed -e 's?\t.*??' "${Library_Location}/catalog"| dmenu -i -p "What Section: ") 
     [ -z "${Section_Name}" ] && exit
-    Section_Path=$(grep "${Section_Name}" "${Library_Location}/catalog"  | sed -e 's?.*\t??' | tr -d '\n')
+    Section_Path=$(grep -m1 "${Section_Name}" "${Library_Location}/catalog" | sed -e 's?.*\t??' | tr -d '\n')
     if [ -f "${Section_Path}/shelves" ]
     then
         Shelf=$(sed -e 's?\t.*??' "${Section_Path}/shelves"| dmenu -i -p "What Shelf (Enter None for None): ")
         [ -z "${Shelf}" ] && exit
         if [ "${Shelf}" != "None" ]
         then
-            Section_Path=$(grep "${Shelf}" "${Section_Path}/shelves" | sed -e 's?^.*\t??')
+            Section_Path=$(grep -m1 "${Shelf}" "${Section_Path}/shelves" | sed -e 's?^.*\t??')
         fi
     fi
     Book_Title=$(printf '' | dmenu -i -p "Book Title: ")
@@ -85,6 +85,7 @@ Library_BookAdd(){
     else
         Files=""
         _Files=""
+        printf "Section Path: ${Section_Path}" > ~/dmenu_books.log
         for file in ${Section_Path}/*
         do
             Files="${Files}"$(basename "${file}")
@@ -93,7 +94,7 @@ Library_BookAdd(){
         done
         Book_Path=$(printf "${Files}" | dmenu -i -p "Choose Book File: ")
         [ -z "${Book_Path}" ] && exit
-        Book_Path=$(printf "${_Files}" | grep "${Book_Path}")
+        Book_Path=$(printf "${_Files}" | grep -m1 "${Book_Path}" -m1)
         Book_Path="${Section_Path}/$(printf "${Book_Path}" | sed -s 's?'"${Section_Path}"'??')"
         Book_Program=$(printf "" | dmenu -i -p "Enter Reading Program: ")
         [ -z "${Book_Program}" ] && exit
@@ -104,8 +105,8 @@ Library_BookAdd(){
 Library_SectionDelete(){
     Section_Name=$(sed -e 's?\t.*??' "${Library_Location}/catalog"| dmenu -i -p "Which Section: ") 
     [ -z "${Section_Name}" ] && exit
-    Section_Path=$(grep "${Section_Name}" "${Library_Location}/catalog"  | sed -e 's?.*\t??' | tr -d '\n')
-    Section_Line=$(grep "${Section_Name}" "${Library_Location}/catalog")
+    Section_Path=$(grep -m1 "${Section_Name}" "${Library_Location}/catalog" | sed -e 's?.*\t??' | tr -d '\n')
+    Section_Line=$(grep -m1 "${Section_Name}" "${Library_Location}/catalog" )
 
     if [ "$(printf 'No\nYes' | dmenu -i -p "Delete Contents of Section? " | tr -d '\n')" = "Yes" ]
     then
@@ -117,18 +118,18 @@ Library_SectionDelete(){
 Library_ShelfDelete(){
     Section_Name=$(sed -e 's?\t.*??' "${Library_Location}/catalog" | dmenu -i -p "What Section: ") 
     [ -z "${Section_Name}" ] && exit
-    Section_Path=$(grep "${Section_Name}" "${Library_Location}/catalog"  | sed -e 's?.*\t??' | tr -d '\n')
+    Section_Path=$(grep -m1 "${Section_Name}" "${Library_Location}/catalog" | sed -e 's?.*\t??' | tr -d '\n')
     if [ -f "${Section_Path}/shelves" ]
     then
         Shelf=$(sed -e 's?\t.*??' "${Section_Path}/shelves"| dmenu -i -p "Which Shelf: ")
         [ -z "${Shelf}" ] && exit
         Shelf_Path=$(sed -e 's?^.*\t??' "${Section_Path}/shelves")
-        Shelf_Line=$(grep "${Shelf_Path}" "${Section_Path}/shelves") 
+        Shelf_Line=$(grep -m1 "${Shelf_Path}" "${Section_Path}/shelves") 
         if [ "$(printf 'No\nYes' | dmenu -i -p "Delete Contents of Shelf? " | tr -d '\n')" = "Yes" ]
         then
             rmdir --ignore-fail-on-empty "${Shelf_Path}"
         fi
-        sed -s 's?'"$(grep "${Shelf_Line}" "${Section_Path}/shelves")"'??' "${Section_Path}/shelves" > "${Section_Path}/shelves.tmp" &&
+        sed -s 's?'"$(grep -m1 "${Shelf_Line}" "${Section_Path}/shelves")"'??' "${Section_Path}/shelves" > "${Section_Path}/shelves.tmp" &&
             mv "${Section_Path}/shelves.tmp" "${Section_Path}/shelves"
     fi
 }
@@ -136,7 +137,7 @@ Library_ShelfDelete(){
 Library_BookRemove(){
     Section_Name=$(sed -e 's?\t.*??' "${Library_Location}/catalog"| dmenu -i -p "What Section: ") 
     [ -z "${Section_Name}" ] && exit
-    Section_Path=$(grep "${Section_Name}" "${Library_Location}/catalog" | sed -e 's?.*\t??')
+    Section_Path=$(grep -m1 "${Section_Name}" "${Library_Location}/catalog" | sed -e 's?.*\t??')
 
     if [ -f "${Section_Path}/shelves" ]
     then
@@ -144,19 +145,19 @@ Library_BookRemove(){
         if [ "${Shelf}" != "_None_" ]
         then
             [ -z "${Shelf}" ] && exit
-            Section_Path=$(grep "${Shelf}" "${Section_Path}/shelves" | sed -e 's?^.*\t??')
+            Section_Path=$(grep -m1 "${Shelf}" "${Section_Path}/shelves" | sed -e 's?^.*\t??')
         fi
     fi
 
     Book=$(sed -e 's?\t.*??' "${Section_Path}/books"| dmenu -i -p "What Book: ")
     [ -z "${Book}" ] && exit
-    Book_File=$(grep "${Book}" "${Section_Path}/books" | sed -e 's?.*\t.*\t??')
-    Book_Line=$(grep "${Book}" "${Section_Path}/books")
+    Book_File=$(grep -m1 "${Book}" "${Section_Path}/books" | sed -e 's?.*\t.*\t??')
+    Book_Line=$(grep -m1 "${Book}" "${Section_Path}/books")
     if [ "$(printf 'No\nYes' | dmenu -i -p "Delete Book on Disk: " | tr -d '\n')" = "Yes" ]
     then
         rm "${Book_File}"
     fi
-    sed -s 's?'"$(grep "${Book_Line}" "${Section_Path}/books")"'??' "${Section_Path}/books" > "${Section_Path}/books.tmp" &&
+    sed -s 's?'"$(grep -m1 "${Book_Line}" "${Section_Path}/books")"'??' "${Section_Path}/books" > "${Section_Path}/books.tmp" &&
         mv "${Section_Path}/books.tmp" "${Section_Path}/books"
 }
 
