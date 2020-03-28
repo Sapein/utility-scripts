@@ -3,20 +3,27 @@
 unset IFS
 
 Library_Location="${Library_Location:-${HOME}/library}"
+
+# This is mostly for personal configuration.
+dmenu_browseargs="-i -p"
+dmenu_browseargs_book="-b ${dmenu_browseargs}"
+dmenu_browseargs_section="${dmenu_browseargs}"
+dmenu_browseargs_shelf="${dmenu_browseargs}"
+
 Library_Browse(){
-    Section_Name=$(sed -e 's?\t.*??' "${Library_Location}/catalog" | dmenu -i -p "What Section: ") 
+    Section_Name=$(sed -e 's?\t.*??' "${Library_Location}/catalog" | dmenu ${dmenu_browseargs_section} "What Section: ") 
     [ -z "${Section_Name}" ] && exit
     Section_Path=$(grep "${Section_Name}" "${Library_Location}/catalog" | sed -e 's?.*\t??')
     if [ -f "${Section_Path}/shelves" ]
     then
-        Shelf=$(sed -e 's?\t.*??' "${Section_Path}/shelves" | dmenu -i -p "What Shelf (Enter None for None): ")
+        Shelf=$(sed -e 's?\t.*??' "${Section_Path}/shelves" | dmenu ${dmenu_browseargs_shelf} "What Shelf (Enter None for None): ")
         if [ "${Shelf}" != "None" ]
         then
             [ -z "${Shelf}" ] && exit
             Section_Path=$(grep "${Shelf}" "${Section_Path}/shelves" | sed -e 's?^.*\t??')
         fi
     fi
-    Book=$(sed -e 's?\t.*??' "${Section_Path}/books" | dmenu -i -p "What Book: ")
+    Book=$(sed -e 's?\t.*??' "${Section_Path}/books" | dmenu ${dmenu_browseargs_book} "What Book: ")
     [ -z "${Book}" ] && exit
     Book_File=$(grep "${Book}" "${Section_Path}/books" | sed -e 's?.*\t.*\t??')
     Book_Program=$(grep "${Book}" "${Section_Path}/books" | sed -e 's?.*\t\(.*\)\t.*?\1?')
