@@ -85,7 +85,6 @@ Library_BookAdd(){
     else
         Files=""
         _Files=""
-        printf "Section Path: ${Section_Path}" > ~/dmenu_books.log
         for file in ${Section_Path}/*
         do
             Files="${Files}"$(basename "${file}")
