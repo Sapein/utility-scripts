@@ -6,7 +6,7 @@ Library_Location="${Library_Location:-${HOME}/library}"
 
 # This is mostly for personal configuration.
 dmenu_browseargs="-i -p"
-dmenu_browseargs_book="-b ${dmenu_browseargs}"
+dmenu_browseargs_book="${dmenu_browseargs}"
 dmenu_browseargs_section="${dmenu_browseargs}"
 dmenu_browseargs_shelf="${dmenu_browseargs}"
 
@@ -60,7 +60,7 @@ Library_ShelfCreate(){
         Shelf_Path="${Section_Path}/${Shelf_Path}"
         mkdir "${Shelf_Path}"
     fi
-    printf "${Shelf_Name}\t${Section_Path}/${Shelf_Path}\n" >> "${Section_Path}/shelves"
+    printf "${Shelf_Name}\t${Shelf_Path}\n" >> "${Section_Path}/shelves"
 }
 
 Library_BookAdd(){
