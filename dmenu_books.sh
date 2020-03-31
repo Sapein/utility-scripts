@@ -16,7 +16,12 @@ Library_Browse(){
     Section_Path=$(grep -m1 "${Section_Name}" "${Library_Location}/catalog" | sed -e 's?.*\t??')
     if [ -f "${Section_Path}/shelves" ]
     then
-        Shelf=$(sed -e 's?\t.*??' "${Section_Path}/shelves" | dmenu ${dmenu_browseargs_shelf} "What Shelf (Enter None for None): ")
+        if [ -f "${Section_Path}/books" ] 
+        then
+            Shelf=$(printf "$(sed -e 's?\t.*??' "${Section_Path}/shelves")\nNone" | dmenu ${dmenu_browseargs_shelf} "What Shelf (Enter None for None): ")
+        else
+            Shelf=$(sed -e 's?\t.*??' "${Section_Path}/shelves" | dmenu ${dmenu_browseargs_shelf} "What Shelf (Enter None for None): ")
+        fi
         if [ "${Shelf}" != "None" ]
         then
             [ -z "${Shelf}" ] && exit
