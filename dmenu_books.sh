@@ -32,7 +32,12 @@ Library_Browse(){
     [ -z "${Book}" ] && exit
     Book_File=$(grep -m1 "${Book}" "${Section_Path}/books" | sed -e 's?.*\t.*\t??')
     Book_Program=$(grep -m1 "${Book}" "${Section_Path}/books" | sed -e 's?.*\t\(.*\)\t.*?\1?')
-    "${Book_Program}" "${Book_File}"
+    if printf "${Book_File}" | grep ' ' > /dev/null
+    then
+        "${Book_Program}" "${Book_File}"
+    else
+        "${Book_Program}" ${Book_File}
+    fi
 }
 
 Library_SectionCreate(){
