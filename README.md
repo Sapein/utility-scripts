@@ -25,6 +25,10 @@ Name    Path
 For books it uses the following format:
 Name    Reader    Path
 
+
+### dmenu_flatpak  
+   This is a very simple flatpak launcher for dmenu. It doesn't do anything special or does any special filtering.
+
 ### bbs_menu  
    This is a script that allows you to store a list of BBS systems to connect to from dmenu.
 Everything is under ~/.config/bbs_list for the most part. It is forked from dmenu_books as well.

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+NAME_SCRIPT='{print $1" "$2}'
+
+PROGRAM_SCRIPT='NF == 2 {print $2}
+NF == 3 {print $3}'
+
+dmenu_browseargs="-i -p"
+result=$(flatpak list --columns="name" | awk "${NAME_SCRIPT}" | sed -s 's?Name??' | sed -s 's? $??' | dmenu ${dmenu_browseargs} "What Flatpak: ")
+flatpak run $(flatpak list --columns="name,app" | grep "${result}" | awk -s "${PROGRAM_SCRIPT}" )
