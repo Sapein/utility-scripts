@@ -22,12 +22,26 @@ otherwise pass it in either "Browse", "Manage", "Librarian", "BookAdd", "BookRem
 The format for all storage have the fields delimitated by tabs and are as follows:
 Name    Path
 
-For books it uses the following format:
+For books it uses the following format, also delimitated by tabs:
+Name    Reader    Path
+
+### dmenu_books2
+   This is an updated version of `dmenu_books`. The main change is that browsing now supports nested
+shelves and also shelves and books can be displayed next to each other, along with some minor code cleanup.
+
+Unfortunately, this breaks the `Shelf Delete`, `Shelf Create`, `Book Add`, and `Book Delete` functionality.
+This will be restored in the future.
+
+The format for all storage have the fields delimitated by tabs and are as follows:
+Name    Path
+
+For books it uses the following format, also delimitated by tabs:
 Name    Reader    Path
 
 
 ### dmenu_flatpak  
    This is a very simple flatpak launcher for dmenu. It doesn't do anything special or does any special filtering.
+This only displays things that have the `current` option.
 
 ### bbs_menu  
    This is a script that allows you to store a list of BBS systems to connect to from dmenu.
