@@ -12,6 +12,7 @@ dmenu_browseargs_section="${dmenu_browseargs}"
 dmenu_browseargs_shelf="${dmenu_browseargs}"
 
 mix_books="y"
+
 alias extract_path="sed -e 's?^.*\t??'"
 alias extract_name="sed -e 's?\t.*??'"
 alias get_book_path="sed -e 's?.*\t.*\t??'"
@@ -52,6 +53,7 @@ Library_Browse_Shelves() {
                 elif echo "${shelf}" | grep -qw "${input}" > /dev/null
                 then
                     Shelf="${input}"
+                    Handle_None
                 fi
                 unset books shelf input
             fi
